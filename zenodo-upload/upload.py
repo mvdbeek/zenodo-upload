@@ -8,7 +8,8 @@ from typing import Optional
 
 import requests
 
-from models import Deposition
+from models.depositions import Deposition
+from models.files import FilesResponse
 
 log = logging.getLogger(__name__)
 
@@ -42,10 +43,11 @@ def create_upload(
 
 def upload_file(
     session: requests.Session, path: str, bucket_url: str, rel_path: Optional[str]
-):
+) -> FilesResponse:
     with open(path, "rb") as fh:
         # TODO: make sure file doesn't exist
         response = session.put(
             urljoin(bucket_url, urlencode(rel_path or os.path.basename(path))), data=fh
         )
     check_response(response)
+    return FilesResponse(response.json())
